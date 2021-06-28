@@ -49,5 +49,4 @@ public class BeerDto {
 
     @Positive
     private Integer quantityOnHand;
-
 }

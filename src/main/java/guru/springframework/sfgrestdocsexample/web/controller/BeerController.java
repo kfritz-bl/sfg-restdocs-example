@@ -1,5 +1,6 @@
 package guru.springframework.sfgrestdocsexample.web.controller;
 
+import guru.springframework.sfgrestdocsexample.domain.Beer;
 import guru.springframework.sfgrestdocsexample.repositories.BeerRepository;
 import guru.springframework.sfgrestdocsexample.web.mappers.BeerMapper;
 import guru.springframework.sfgrestdocsexample.web.model.BeerDto;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,14 +24,21 @@ public class BeerController {
     private final BeerMapper beerMapper;
     private final BeerRepository beerRepository;
 
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Beer> getBeers() {
+        return (List<Beer>) beerRepository.findAll();
+    }
+
     @GetMapping("/{beerId}")
-    public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId){
+    public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId) {
 
         return new ResponseEntity<>(beerMapper.BeerToBeerDto(beerRepository.findById(beerId).get()), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity saveNewBeer(@RequestBody @Validated BeerDto beerDto){
+    public ResponseEntity saveNewBeer(@RequestBody @Validated BeerDto beerDto) {
 
         beerRepository.save(beerMapper.BeerDtoToBeer(beerDto));
 
@@ -37,7 +46,7 @@ public class BeerController {
     }
 
     @PutMapping("/{beerId}")
-    public ResponseEntity updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody @Validated BeerDto beerDto){
+    public ResponseEntity updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody @Validated BeerDto beerDto) {
         beerRepository.findById(beerId).ifPresent(beer -> {
             beer.setBeerName(beerDto.getBeerName());
             beer.setBeerStyle(beerDto.getBeerStyle().name());
@@ -49,5 +58,4 @@ public class BeerController {
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-
 }
